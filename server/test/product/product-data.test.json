@@ -1,0 +1,70 @@
+{
+  "info": {
+    "name": "Product A",
+    "description": "Product A description",
+    "price": 500000,
+    "sale": 0
+  },
+  "owner": {
+    "seller_id": "ABC-XYZ-KMN-OPQ",
+    "store_id": "ABC-XYZ-KMN-OPQ"
+  },
+  "images": {
+    "thumbnail": ".....png,jpg",
+    "img_details": [".....png,jpg", ".....png,jpg", ".....png,jpg"]
+  },
+  "stock": 50,
+  "tags": ["#a", "#b", "#c"],
+  "brand": "Dior",
+  "varitants": [
+    {
+      "sku": "ABC-XYZ",
+      "stock": 50,
+      "attributes": [
+        {
+          "attr_name": "Size",
+          "attr_value": [
+            { "value_name": "M", "value_stock": 50 },
+            { "value_name": "XL", "value_stock": 50 },
+            { "value_name": "XXL", "value_stock": 50 }
+          ]
+        },
+        {
+          "attr_name": "Color",
+          "attr_value": [
+            { "value_name": "White", "value_stock": 50 },
+            { "value_name": "Red", "value_stock": 50 },
+            { "value_name": "Black", "value_stock": 50 }
+          ]
+        }
+      ]
+    }
+  ],
+  "ship_support": ["Flash", "Normal"],
+  "total_rating": 4.9,
+  "reviews": [
+    {
+      "rating": 5.0,
+      "comment": "Good Product",
+      "reviewer_email": "viewer@gmail.com",
+      "reviewer_name": "Viewer",
+      "comment_at": "2026-11-01T08:56:21.618Z"
+    },
+    {
+      "rating": 5.0,
+      "comment": "Good Product",
+      "reviewer_email": "viewer@gmail.com",
+      "reviewer_name": "Viewer",
+      "comment_at": "2026-11-01T08:56:21.618Z"
+    },
+    {
+      "rating": 5.0,
+      "comment": "Good Product",
+      "reviewer_email": "viewer@gmail.com",
+      "reviewer_name": "Viewer",
+      "comment_at": "2026-11-01T08:56:21.618Z"
+    }
+  ],
+  "createdAt": "2026-11-01T08:56:21.618Z",
+  "updatedAt": "2026-11-01T08:56:21.618Z"
+}

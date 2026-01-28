@@ -1,0 +1,11 @@
+DỰ ÁN AYW Any thing You Want
+
+#Framework
+
++ Server -> Nodejs
++ Client -> Nextjs 
++ Admin system -> Laravel.
+
+#Database
+NoSQL -> Mongoose
+SQL -> PostgreSQL

@@ -1,0 +1,60 @@
+{
+    "sellers": {
+        "email_address": "khitquangdai1409@gmail.com",
+        "current_password": "140905",
+        "last_name": "Khit",
+        "full_name": "Quang Dai Khit",
+        "first_name": "Quang Dai",
+        "date_of_birth": "2005-09-14",
+        "address": [
+            {
+                "province": "Khánh Hòa",
+                "ward": "Ninh Phước",
+                "address_detail": "Hữu Đức"
+            },
+            {
+                "province": "TP.Hồ Chí Minh",
+                "ward": "Tân Phú",
+                "address_detail": "205/34 Thoại Ngọc Hầu"
+            }
+        ],
+        "phones": [
+            {
+                "phone_number": "0793844821",
+                "type": "individual"
+            },
+            {
+                "phone_number": "0794893642",
+                "type": "individual"
+            }
+        ]
+    },
+    "users": {
+        "email_address": "khitquangdai1409@gmail.com",
+        "current_password": "140905",
+        "last_name": "Khit",
+        "full_name": "Quang Dai Khit",
+        "first_name": "Quang Dai",
+        "date_of_birth": "2005-09-14",
+        "address": [
+            {
+                "province": "Khánh Hòa",
+                "ward": "Ninh Phước",
+                "address_detail": "Hữu Đức"
+            },
+            {
+                "province": "TP.Hồ Chí Minh",
+                "ward": "Tân Phú",
+                "address_detail": "205/34 Thoại Ngọc Hầu"
+            }
+        ],
+        "phones": [
+            {
+                "phone_number": "0793844821"
+            },
+            {
+                "phone_number": "0794893642"
+            }
+        ]
+    }
+}
