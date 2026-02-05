@@ -12,6 +12,7 @@ import { FormEvent, useState } from "react";
 interface LoginFormProps {
   setState: React.Dispatch<React.SetStateAction<LoginData>>;
   submit: (e: FormEvent) => void;
+  errorMess: string | null;
 }
 
 export default function LoginForm(props: LoginFormProps) {
@@ -37,7 +38,7 @@ export default function LoginForm(props: LoginFormProps) {
             <span>Email</span>
           </label>
           <input
-            className="border border-gray-300 p-3 rounded-lg w-full outline-none bg-white focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+            className="border border-gray-300 p-3 rounded-full w-full outline-none bg-white focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
             type="email"
             name="email_address"
             id="email_address"
@@ -62,7 +63,7 @@ export default function LoginForm(props: LoginFormProps) {
             <span>Mật khẩu</span>
           </label>
           <input
-            className="border border-gray-300 p-3 rounded-lg w-full outline-none bg-white focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
+            className="border border-gray-300 p-3 rounded-full w-full outline-none bg-white focus:border-green-500 focus:ring-2 focus:ring-green-200 transition-all duration-200"
             type="password"
             onChange={(e) =>
               props.setState((prev) => ({
@@ -85,6 +86,7 @@ export default function LoginForm(props: LoginFormProps) {
               onChange={() => setIsAggress((prev) => !prev)}
               checked={isAggree}
               name="is_aggree"
+              required
               id="is_aggree"
               className="w-4 h-4 text-green-500 border-gray-300 rounded focus:ring-green-500 cursor-pointer"
             />
@@ -130,6 +132,13 @@ export default function LoginForm(props: LoginFormProps) {
           </button>
         </div>
 
+        <div className="mb-6 text-center">
+          {props.errorMess && (
+            <small className="text-red-500 italic">
+              {"*" + props.errorMess}
+            </small>
+          )}
+        </div>
         {/* Divider */}
         <div className="relative mb-6">
           <div className="absolute inset-0 flex items-center">

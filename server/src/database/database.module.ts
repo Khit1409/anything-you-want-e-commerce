@@ -1,10 +1,12 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { productSchema } from 'src/schemas/product.schema';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { typeOrmConfig } from 'src/config/database.config';
 
 @Module({
   imports: [
+    //mongoose
     MongooseModule.forRootAsync({
       imports: [],
       inject: [ConfigService],
@@ -12,8 +14,15 @@ import { productSchema } from 'src/schemas/product.schema';
         uri: configService.get<string>('MONGO_URI'),
       }),
     }),
-    MongooseModule.forFeature([{ name: 'Product', schema: productSchema }]),
+    //typeorm
+    TypeOrmModule.forRootAsync({
+      imports: [],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => {
+        return typeOrmConfig(configService);
+      },
+    }),
   ],
-  exports: [MongooseModule],
+  exports: [MongooseModule, TypeOrmModule],
 })
 export class DatabaseModule {}

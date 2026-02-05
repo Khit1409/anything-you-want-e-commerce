@@ -1,0 +1,10 @@
+import { IsNumber, IsString } from 'class-validator';
+
+export class ResponseDto {
+  @IsString()
+  message: string;
+  @IsNumber()
+  success: boolean;
+  @IsString()
+  timestamp: Date | string;
+}

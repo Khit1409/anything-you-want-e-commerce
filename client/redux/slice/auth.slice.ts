@@ -6,6 +6,7 @@ const authInitalState: IAuthInitalState = {
   isLoggedIn: false,
   error: null,
   loading: false,
+  authData: null,
 };
 /**
  *
@@ -22,10 +23,11 @@ const authSlice = createSlice({
       })
       .addCase(loginThunk.fulfilled, (state) => {
         state.loading = false;
+        state.error = null;
       })
       .addCase(loginThunk.rejected, (state, action) => {
         state.loading = false;
-        state.error = action.error.message as string;
+        state.error = action.payload as string;
       })
       //auth
       .addCase(authThunk.pending, (state) => {
@@ -35,12 +37,14 @@ const authSlice = createSlice({
         state.loading = false;
         if (action.payload.data && action.payload.success) {
           state.isLoggedIn = true;
+          state.authData = action.payload.data;
         } else {
           state.isLoggedIn = false;
         }
       })
       .addCase(authThunk.rejected, (state, action) => {
-        state.error = action.error.message as string;
+        state.error =
+          (action.error.message as string) || (action.payload as string);
         state.isLoggedIn = false;
         state.loading = false;
       });

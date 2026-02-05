@@ -1,34 +1,51 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Param,
-  //   InternalServerErrorException,
-  Post,
-  Req,
-  Res,
-} from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import type { Request, Response } from 'express';
-import type { LoginDto } from 'src/dto/auth.dto';
 import { AuthService } from './auth.service';
 import { authCookieConfig } from 'src/config/cookie.config';
+import {
+  LoginRequestDto,
+  RegisterUserAccountRequestDto,
+} from 'src/dto/request/auth.request.dto';
+import { LoginResponseDto } from 'src/dto/response/auth.response.dto';
+import { RoleDto } from 'src/dto/common/auth.common.dto';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('login')
-  async login(@Body() dto: LoginDto, @Res() res: Response) {
-    const result = await this.authService.clientLogin(dto);
-    const { message, success, timestamp, cookieValue, status } = result;
+  async login(
+    @Body() dto: LoginRequestDto,
+    @Req() req: Request,
+    @Res() res: Response,
+  ) {
+    let result:
+      | (LoginResponseDto & {
+          status: number;
+        })
+      | null = null;
+    if (dto.loginRole === RoleDto.SELLER) {
+      result = await this.authService.sellerLogin(dto);
+    } else {
+      const sessionId = req.sessionId;
+      result = await this.authService.clientLogin(dto, sessionId);
+    }
+    if (!result) {
+      return res.status(404).json({
+        message: 'Role is not get or some thing error',
+        timestamp: new Date().toLocaleDateString('vi-VN'),
+        success: false,
+      });
+    }
+    const { message, success, timestamp, cookieValue, status, data } = result;
     if (cookieValue) {
       const { token, tokenName } = cookieValue;
       return res
         .cookie(tokenName, token, authCookieConfig)
-        .json({ message, success, timestamp })
+        .json({ message, success, timestamp, data })
         .status(status);
     }
-    return res.status(status).json({ message, timestamp, success });
+    return res.status(status).json({ message, timestamp, success, data });
   }
   /**
    *
@@ -37,41 +54,22 @@ export class AuthController {
    * @param res
    * @returns
    */
-  @Get('me/:role')
+  @Get('me')
   async auth(
-    @Param('role') role: 'user' | 'seller',
     @Req()
-    req: {
-      cookies: { seller_access_token: string; user_access_token: string };
-    },
+    req: Request,
     @Res() res: Response,
   ) {
-    const token: string =
-      role === 'seller'
-        ? req.cookies.seller_access_token
-        : req.cookies.user_access_token;
-    const result = await this.authService.clientAuth(token);
-    const { message, status, success, data, timestamp } = result;
-    if (data) {
-      return res.status(status).json({ message, success, data, timestamp });
+    //handle
+    const result = await this.authService.clientAuth(req);
+    const { message, status, success, data, timestamp, sessionId } = result;
+    if (sessionId) {
+      return res
+        .cookie('session_id', sessionId, authCookieConfig)
+        .status(status)
+        .json({ message, success, timestamp, data });
     }
-    return res.status(status).json({ message, success, timestamp });
-  }
-  /**
-   *
-   * @param role
-   * @param res
-   * @returns
-   */
-  @Get('profile/:role')
-  async profile(
-    @Param('role') role: 'user' | 'seller',
-    @Req() req: Request,
-    @Res() res: Response,
-  ) {
-    const { message, status, success, data } =
-      await this.authService.getProfile(role, req);
-    return res.status(status).json({ message, success, data });
+    return res.status(status).json({ message, success, timestamp, data });
   }
   /**
    * @param role
@@ -81,18 +79,14 @@ export class AuthController {
    */
   @Post('logout')
   logout(
-    @Body('role') role: 'user' | 'seller',
     @Req()
     req: {
-      cookies: { seller_access_token: string; user_access_token: string };
+      cookies: { access_token: string };
     },
     @Res() res: Response,
   ) {
-    const tokenName = role + '_access_token';
-    const token =
-      role === 'seller'
-        ? req.cookies.seller_access_token
-        : req.cookies.user_access_token;
+    const tokenName = 'access_token';
+    const token = req.cookies.access_token;
     if (!token)
       return res.status(401).json({
         message: 'Not existing your token in cookies!',
@@ -104,5 +98,17 @@ export class AuthController {
       success: true,
       timestamp: new Date(),
     });
+  }
+  /**
+   * register
+   */
+  @Post('register/user')
+  async userRegister(
+    @Body() dto: RegisterUserAccountRequestDto,
+    @Res() res: Response,
+  ) {
+    const result = await this.authService.userRegister(dto);
+    const { message, status, timestamp, success } = result;
+    return res.status(status).json({ message, success, timestamp });
   }
 }

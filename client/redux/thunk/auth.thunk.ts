@@ -1,10 +1,14 @@
-import { authService, LoginData, loginService } from "@/api/auth.api";
+import {
+  authService,
+  LoginData,
+  LoginResponse,
+  loginService,
+} from "@/api/auth.api";
 import { IAuthenticationResponse } from "@/interfaces/common/auth.interface";
-import { Role } from "@/interfaces/common/role.interface";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 
 export const loginThunk = createAsyncThunk<
-  boolean,
+  LoginResponse,
   LoginData,
   { rejectValue: string }
 >("login", async ({ currentPassword, emailAddress, loginRole }, thunkAPI) => {
@@ -14,19 +18,24 @@ export const loginThunk = createAsyncThunk<
       emailAddress,
       loginRole,
     });
-    return result.success;
+
+    if (!result.success) {
+      return thunkAPI.rejectWithValue(result.message);
+    }
+
+    return result;
   } catch (error) {
-    return thunkAPI.rejectWithValue(error as string);
+    return thunkAPI.rejectWithValue(("Unkwon this error!" + error) as string);
   }
 });
 
 export const authThunk = createAsyncThunk<
   IAuthenticationResponse,
-  { role: Role },
+  void,
   { rejectValue: string }
->("auth", async ({ role }, thunkAPI) => {
+>("auth", async (_, thunkAPI) => {
   try {
-    const result = await authService(role);
+    const result = await authService();
     return result;
   } catch (error) {
     return thunkAPI.rejectWithValue(error as string);

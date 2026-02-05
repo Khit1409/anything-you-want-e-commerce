@@ -1,0 +1,34 @@
+[
+  {
+    "name": "Fashion",
+    "slug": "fashion"
+  },
+  {
+    "name": "Shoes",
+    "slug": "shoes"
+  },
+  {
+    "name": "Electronics",
+    "slug": "electronics"
+  },
+  {
+    "name": "Beauty",
+    "slug": "beauty"
+  },
+  {
+    "name": "Home & Living",
+    "slug": "home-living"
+  },
+  {
+    "name": "Sports",
+    "slug": "sports"
+  },
+  {
+    "name": "Books",
+    "slug": "books"
+  },
+  {
+    "name": "Toys",
+    "slug": "toys"
+  }
+]

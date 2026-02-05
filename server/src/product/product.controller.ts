@@ -1,11 +1,19 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query, Param, HttpCode } from '@nestjs/common';
 import { ProductService } from './product.service';
+import { GetProductQueryDto } from '../dto/request/product.request.dto';
 
-@Controller('product')
+@Controller('products')
 export class ProductController {
   constructor(private readonly productService: ProductService) {}
-  @Get('')
-  async getAll() {
-    return await this.productService.getAllProduct();
+
+  @HttpCode(200)
+  @Get()
+  async getAll(@Query() dto: GetProductQueryDto) {
+    return await this.productService.getAllProduct(dto);
+  }
+  @HttpCode(200)
+  @Get(':id')
+  async getDetail(@Param('id') id: string) {
+    return await this.productService.getDetail(id);
   }
 }

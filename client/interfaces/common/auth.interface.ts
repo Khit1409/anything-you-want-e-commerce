@@ -1,4 +1,6 @@
+
 import { Role } from "./role.interface";
+
 
 export interface IAuthenticationData {
   uid: string;

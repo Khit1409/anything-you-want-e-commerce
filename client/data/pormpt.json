@@ -1,0 +1,123 @@
+{
+  "id": "698409f03a4a259d9c3cd3c3",
+  "items": {
+    "product_id": "698409f03a4a259d9c3cd3c3",
+    "name": "name 1",
+    "price": 275000,
+    "sale": 1,
+    "quantity": 1,
+    "category": {
+      "name": "Shoes",
+      "slug": "shoes"
+    },
+    "brand": "Generic Brand",
+    "origin": "Viet Nam",
+    "thumbnail": "https://images.unsplash.com/photo-1542291026-7eec264c27ff"
+  },
+  "owner": {
+    "user_id": "user-id-1",
+    "seller_id": "seller-id-1",
+    "store_id": "stored-id-1",
+    "session_id": "session-id-user-1"
+  },
+  "options": [
+    {
+      "key": "color",
+      "label": "Màu sắc",
+      "values": [
+        {
+          "value": "red",
+          "display": "Đỏ",
+          "image": "https://images.unsplash.com/photo-1595341888016-a392ef81b7de"
+        },
+        {
+          "value": "yellow",
+          "display": "Vàng",
+          "image": "https://images.unsplash.com/photo-1595341888016-a392ef81b7de"
+        }
+      ]
+    },
+    {
+      "key": "size",
+      "label": "Kích thước",
+      "values": [
+        {
+          "value": "40",
+          "display": "40"
+        },
+        {
+          "value": "41",
+          "display": "41"
+        }
+      ]
+    }
+  ],
+  "variant_chosen": {
+    "sku": "NIKE-WHITE-39",
+    "stock": 50,
+    "options": {
+      "color": "white",
+      "size": "39"
+    },
+    "price_extra": 0
+  },
+  "other_variants": [
+    {
+      "sku": "NIKE-WHITE-40",
+      "stock": 30,
+      "options": {
+        "color": "white",
+        "size": "40"
+      },
+      "price_extra": 10000
+    },
+    {
+      "sku": "NIKE-WHITE-41",
+      "stock": 20,
+      "options": {
+        "color": "white",
+        "size": "41"
+      },
+      "price_extra": 5000
+    },
+
+    {
+      "sku": "NIKE-RED-41",
+      "stock": 20,
+      "options": {
+        "color": "red",
+        "size": "39"
+      },
+      "price_extra": 5000
+    },
+
+    {
+      "sku": "NIKE-RED-41",
+      "stock": 20,
+      "options": {
+        "color": "red",
+        "size": "40"
+      },
+      "price_extra": 5000
+    },
+    {
+      "sku": "NIKE-RED-41",
+      "stock": 20,
+      "options": {
+        "color": "red",
+        "size": "41"
+      },
+      "price_extra": 5000
+    }
+  ],
+  "shipping": {
+    "flash": true,
+    "normal": true
+  },
+  "rating_sumary": {
+    "avg": 5,
+    "total": 3
+  },
+  "createdAt": "2026-01-31",
+  "updatedAt": "2026-01-31"
+}
