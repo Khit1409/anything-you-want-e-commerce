@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  Post,
+  Req,
+  Res,
+} from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { authCookieConfig } from 'src/config/cookie.config';
@@ -6,49 +14,34 @@ import {
   LoginRequestDto,
   RegisterUserAccountRequestDto,
 } from 'src/dto/request/auth.request.dto';
-import { LoginResponseDto } from 'src/dto/response/auth.response.dto';
 import { RoleDto } from 'src/dto/common/auth.common.dto';
+import { CookieMap } from 'src/interfaces/cookies.interface';
 
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @HttpCode(200)
   @Post('login')
   async login(
     @Body() dto: LoginRequestDto,
     @Req() req: Request,
-    @Res() res: Response,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    let result:
-      | (LoginResponseDto & {
-          status: number;
-        })
-      | null = null;
     if (dto.loginRole === RoleDto.SELLER) {
-      result = await this.authService.sellerLogin(dto);
-    } else {
-      const sessionId = req.sessionId;
-      result = await this.authService.clientLogin(dto, sessionId);
+      const result = await this.authService.sellerLogin(dto);
+      const { token, data, message, success, timestamp } = result;
+      res.cookie('access_token', token, authCookieConfig);
+      return { message, success, timestamp, data };
     }
-    if (!result) {
-      return res.status(404).json({
-        message: 'Role is not get or some thing error',
-        timestamp: new Date().toLocaleDateString('vi-VN'),
-        success: false,
-      });
-    }
-    const { message, success, timestamp, cookieValue, status, data } = result;
-    if (cookieValue) {
-      const { token, tokenName } = cookieValue;
-      return res
-        .cookie(tokenName, token, authCookieConfig)
-        .json({ message, success, timestamp, data })
-        .status(status);
-    }
-    return res.status(status).json({ message, timestamp, success, data });
+    const sessionId = req.sessionId;
+    const result = await this.authService.clientLogin(dto, sessionId);
+    const { token, data, message, success, timestamp } = result;
+    console.log(result);
+    res.cookie('access_token', token, authCookieConfig);
+    return { message, success, timestamp, data };
   }
   /**
-   *
    * @param role
    * @param req
    * @param res
@@ -83,17 +76,23 @@ export class AuthController {
     req: {
       cookies: { access_token: string };
     },
-    @Res() res: Response,
+    @Res({ passthrough: true }) res: Response,
   ) {
-    const tokenName = 'access_token';
-    const token = req.cookies.access_token;
-    if (!token)
+    const cookies = req.cookies as CookieMap;
+    const access_token = cookies.access_token;
+    const session_id = cookies.session_id;
+
+    if (!access_token && !session_id)
       return res.status(401).json({
         message: 'Not existing your token in cookies!',
         success: false,
         timestamp: new Date(),
       });
-    return res.status(200).clearCookie(tokenName).json({
+
+    res.clearCookie('access_token', authCookieConfig);
+    res.clearCookie('session_id', authCookieConfig);
+
+    return res.status(200).json({
       message: 'Logout is successfully!',
       success: true,
       timestamp: new Date(),

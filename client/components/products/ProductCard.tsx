@@ -30,10 +30,10 @@ export default function ProductCard({ product }: { product: ProductPreviews }) {
       <div className="p-3 flex flex-col grow">
         {/* Brand */}
         <Link
-          href={`/search?brand=${product.brand}`}
+          href={`/search?brand=${product.info.brand}`}
           className="text-xs text-gray-600 hover:text-orange-600 hover:underline mb-1 block"
         >
-          {product.brand}
+          {product.info.brand}
         </Link>
 
         {/* Product Name */}

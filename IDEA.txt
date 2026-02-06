@@ -4,7 +4,6 @@ DỰ ÁN AYW Any thing You Want
 
 + Server -> Nodejs
 + Client -> Nextjs 
-+ Admin system -> Laravel.
 
 #Database
 NoSQL -> Mongoose

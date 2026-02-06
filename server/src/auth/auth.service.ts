@@ -1,12 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { InjectRepository } from '@nestjs/typeorm';
 import axios from 'axios';
 import { randomUUID } from 'crypto';
-import type { Request } from 'express';
+import { Request } from 'express';
 import { Model } from 'mongoose';
-
 import bcrypt from 'node_modules/bcryptjs';
 import { Seller } from 'src/database/structure/entities/seller.entity';
 import { User, UserStatus } from 'src/database/structure/entities/user.entity';
@@ -136,19 +135,20 @@ export class AuthService {
   async clientLogin(
     dto: LoginRequestDto,
     sessionId?: string,
-  ): Promise<LoginResponseDto & { status: number }> {
+  ): Promise<LoginResponseDto> {
     const { emailAddress, currentPassword } = dto;
 
     try {
       const user = await this.userRepo.findOne({ where: { emailAddress } });
-
       if (!user) {
-        return {
-          message: 'USER IS NOT DEFINE!',
-          success: false,
-          status: 401,
-          timestamp: new Date().toLocaleDateString('vi-VN'),
-        };
+        throw new HttpException(
+          {
+            message: 'USER IS NOT DEFINE!',
+            success: false,
+            timestamp: new Date().toLocaleDateString('vi-VN'),
+          },
+          401,
+        );
       }
 
       const comparePassword = await bcrypt.compare(
@@ -157,12 +157,14 @@ export class AuthService {
       );
 
       if (!comparePassword) {
-        return {
-          message: 'Password is not compare!',
-          status: 401,
-          success: false,
-          timestamp: new Date().toLocaleDateString('vi-VN'),
-        };
+        throw new HttpException(
+          {
+            message: 'Password is not compare!',
+            success: false,
+            timestamp: new Date().toLocaleDateString('vi-VN'),
+          },
+          300,
+        );
       }
 
       const tokenPayload = {
@@ -171,56 +173,49 @@ export class AuthService {
         email: user.emailAddress,
       };
 
-      const tokenName = 'access_token';
-
       const token = await this.jwtService.signAsync(tokenPayload, {
         expiresIn: '1d',
       });
 
-      const cookieValue = {
-        tokenName,
-        token,
-      };
-
       if (sessionId) {
         try {
+          /**-> user login -> find carts by session id -> update user id
+           *-> user logout -> xóa user id và session id.
+           *-> user thêm cart lần 2 (ssid tạo mới).
+           *-> user login lần 2 -> find carts by session id -> update user id.
+           */
           await this.cartModel.updateMany(
             { 'owner.session_id': sessionId },
             { 'owner.user_id': user.id },
           );
         } catch (error) {
-          return {
-            message: (error as string) || 'Server error exception!',
-            success: false,
-            status: 500,
-            timestamp: new Date().toLocaleDateString('vi-VN'),
-          };
+          throw new HttpException(
+            {
+              message: (error as string) || 'Server error exception!',
+              success: false,
+              timestamp: new Date().toLocaleDateString('vi-VN'),
+            },
+            404,
+          );
         }
       }
 
       return {
-        status: 200,
-        cookieValue,
         data: { role: tokenPayload.role },
+        token,
         message: 'LOGIN SUCCESSFULLY!',
         success: true,
         timestamp: new Date().toLocaleDateString('vi-VN'),
       };
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return {
-          message: error.message,
+      throw new HttpException(
+        {
+          message: error as string,
           success: false,
-          status: 404,
           timestamp: new Date().toLocaleDateString('vi-VN'),
-        };
-      }
-      return {
-        message: (error as string) || 'Server error exception!',
-        success: false,
-        status: 500,
-        timestamp: new Date().toLocaleDateString('vi-VN'),
-      };
+        },
+        500,
+      );
     }
   }
   /**
@@ -228,64 +223,72 @@ export class AuthService {
    * @param dto
    * @returns
    */
-  async sellerLogin(
-    dto: LoginRequestDto,
-  ): Promise<LoginResponseDto & { status: number }> {
+  async sellerLogin(dto: LoginRequestDto): Promise<LoginResponseDto> {
     const { loginRole, currentPassword, emailAddress } = dto;
-
-    console.table([{ loginRole, currentPassword, emailAddress }]);
     try {
+      if (loginRole !== RoleDto.SELLER) {
+        throw new HttpException(
+          {
+            message: 'Role is not seller!',
+            success: false,
+            timestamp: new Date().toLocaleDateString('vi-VN'),
+          },
+          400,
+        );
+      }
       const seller = await this.sellerRepo.findOne({ where: { emailAddress } });
 
       if (!seller) {
-        return {
-          message: 'seller IS NOT DEFINE!',
-          success: false,
-          status: 401,
-          timestamp: new Date().toLocaleDateString('vi-VN'),
-        };
+        throw new HttpException(
+          {
+            message: 'seller IS NOT DEFINE!',
+            success: false,
+            timestamp: new Date().toLocaleDateString('vi-VN'),
+          },
+          401,
+        );
       }
+      const comparePassword = await bcrypt.compare(
+        currentPassword,
+        seller.hashPassword,
+      );
 
+      if (!comparePassword) {
+        throw new HttpException(
+          {
+            message: 'Password is not compare!',
+            success: false,
+            timestamp: new Date().toLocaleDateString('vi-VN'),
+          },
+          300,
+        );
+      }
       const tokenPayload = {
         uid: seller.id,
         role: 'seller' as RoleDto,
         email: seller.emailAddress,
       };
 
-      const tokenName = 'access_token';
-
       const token = await this.jwtService.signAsync(tokenPayload, {
         expiresIn: '1d',
       });
 
-      const cookieValue = {
-        tokenName,
-        token,
-      };
-
       return {
-        status: 200,
-        cookieValue,
+        token,
         data: { role: tokenPayload.role },
         message: 'LOGIN SUCCESSFULLY!',
         success: true,
         timestamp: new Date().toLocaleDateString('vi-VN'),
       };
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return {
-          message: error.message,
+      throw new HttpException(
+        {
+          message: error as string,
           success: false,
-          status: 404,
           timestamp: new Date().toLocaleDateString('vi-VN'),
-        };
-      }
-      return {
-        message: (error as string) || 'Server error exception!',
-        success: false,
-        status: 500,
-        timestamp: new Date().toLocaleDateString('vi-VN'),
-      };
+        },
+        500,
+      );
     }
   }
   /**

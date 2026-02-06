@@ -1,6 +1,6 @@
 import React from "react";
 
-export default function ProductLoading() {
+export default function SectionShowDataLoading() {
   return (
     <div className="w-full h-screen flex items-center justify-center">
       <div className="p-2 flex gap-1 items-center">

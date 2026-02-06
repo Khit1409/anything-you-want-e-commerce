@@ -18,7 +18,7 @@ import { logoutService } from "@/api/auth.api";
 import { authThunk } from "@/redux/thunk/auth.thunk";
 
 export default function Navbar() {
-  const { isLoggedIn } = useSelector((state: RootState) => state.auth);
+  const { isLoggedIn, loading } = useSelector((state: RootState) => state.auth);
   const dispatch = useDispatch<AppDispatch>();
   const logout = async () => {
     const res = await logoutService();
@@ -28,7 +28,7 @@ export default function Navbar() {
   return (
     <div
       id="navbar"
-      className="sticky top-0 z-50 border-b border-gray-200 backdrop-blur-sm bg-white/95"
+      className="sticky top-0 z-50 border-b border-gray-200 backdrop-blur-sm bg-white/95 w-7xl"
     >
       <div className="max-w-7xl mx-auto px-6 py-4">
         <div className="flex items-center justify-between gap-8">
@@ -63,7 +63,6 @@ export default function Navbar() {
               {/* Optional: Add badge for cart count */}
               {/* <span className="absolute -top-1 -right-1 w-5 h-5 bg-purple-600 text-white text-xs rounded-full flex items-center justify-center">3</span> */}
             </Link>
-
             {/* Orders */}
             <Link
               href="/orders"
@@ -78,32 +77,37 @@ export default function Navbar() {
             >
               <FontAwesomeIcon icon={faUser} className="text-lg" />
             </Link>
-
             {/* Divider */}
             <div className="w-px h-6 bg-gray-300 mx-2"></div>
-
-            {/* Auth Button */}
-            {isLoggedIn ? (
-              <button
-                onClick={logout}
-                className="p-2.5 rounded-lg text-gray-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
-                title="Logout"
-              >
-                <FontAwesomeIcon
-                  icon={faArrowRightFromBracket}
-                  className="text-lg"
-                />
-              </button>
-            ) : (
-              <Link
-                href="/login"
-                className="px-4 py-2 rounded-lg text-white bg-purple-600 hover:bg-purple-700 transition-all duration-200 font-medium"
-              >
-                <FontAwesomeIcon icon={faUserCircle} className="mr-2" />
-                Login
-              </Link>
-            )}
-
+            <div className="w-[100px] flex justify-center items-center">
+              {loading ? (
+                <div className="w-max">
+                  <div className="w-[30px] h-[30px] rounded-full border border-gray-500 border-t-transparent animate-spin"></div>
+                </div>
+              ) : isLoggedIn ? (
+                <button
+                  onClick={logout}
+                  className="p-2 rounded-lg text-gray-700 hover:text-red-600 hover:bg-red-50 transition-all duration-200"
+                  title="Logout"
+                >
+                  <FontAwesomeIcon
+                    icon={faArrowRightFromBracket}
+                    className="text-lg"
+                  />
+                </button>
+              ) : (
+                <Link
+                  href="/login"
+                  title="go to login"
+                  className="p-2 rounded-lg text-gray-700 hover:text-red-600 hover:bg-green-50 transition-all text-center duration-200"
+                >
+                  <FontAwesomeIcon
+                    icon={faUserCircle}
+                    className="mr-2 text-lg"
+                  />
+                </Link>
+              )}
+            </div>
             {/* Mobile Menu Toggle */}
             <button className="lg:hidden p-2.5 rounded-lg text-gray-700 hover:text-purple-600 hover:bg-purple-50 transition-all duration-200">
               <FontAwesomeIcon icon={faBars} className="text-lg" />

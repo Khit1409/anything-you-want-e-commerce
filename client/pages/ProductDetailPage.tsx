@@ -1,14 +1,14 @@
 "use client";
 
+import NotFoundProduct from "@/components/products/NotFoundProduct";
+import SectionShowDataLoading from "@/components/common/SectionShowDataLoading";
+import ProductAction from "@/components/products/ProductAction";
+import ProductImage from "@/components/products/ProductImage";
+import ProductInformation from "@/components/products/ProductInformation";
+import ProductOptionSection from "@/components/products/ProductOption";
+import ProductRelated from "@/components/products/ProductRelated";
+import ProductReview from "@/components/products/ProductReview";
 import useProductDetail from "@/hooks/products/useProductDetail";
-import ProductLoading from "../common/ProductLoading";
-import NotFoundProduct from "../common/NotFoundProduct";
-import ProductImage from "../products/ProductImage";
-import ProductInformation from "../products/ProductInformation";
-import ProductRelated from "../products/ProductRelated";
-import ProductReview from "../products/ProductReview";
-import ProductOptionSection from "../products/ProductOption";
-import ProductAction from "../products/ProductAction";
 
 export default function ProductDetailPage() {
   const {
@@ -26,7 +26,7 @@ export default function ProductDetailPage() {
     minusSale,
   } = useProductDetail();
 
-  if (isLoading) return <ProductLoading />;
+  if (isLoading) return <SectionShowDataLoading />;
   if (!isLoading && !product) return <NotFoundProduct />;
   if (error) return <p>{error.message}</p>;
 
@@ -60,7 +60,7 @@ export default function ProductDetailPage() {
         />
       </div>
       <ProductReview reviews={product.reviews} />
-      <ProductRelated products={related} />
+      {related.length > 0 && <ProductRelated products={related} />}
     </div>
   ) : (
     <NotFoundProduct />

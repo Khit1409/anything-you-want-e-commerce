@@ -9,9 +9,8 @@ export class LoginResponseDto extends ResponseDto {
   @IsOptional()
   @Type(() => LoginDataResponseDto)
   data?: LoginDataResponseDto;
-  @IsOptional()
-  @Type(() => CookieValueLoginResponse)
-  cookieValue?: CookieValueLoginResponse;
+  @IsString()
+  token: string;
 }
 export class LoginDataResponseDto {
   @IsEnum(RoleDto)

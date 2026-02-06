@@ -1,8 +1,8 @@
 "use client";
 
 import { FormEvent, useState } from "react";
-import LoginForm from "../common/LoginForm";
-import LoginText from "../common/LoginText";
+import LoginForm from "@/components/common/LoginForm";
+import LoginText from "@/components/common/LoginText";
 import { LoginData } from "@/api/auth.api";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "@/redux/store";

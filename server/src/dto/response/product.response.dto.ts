@@ -134,6 +134,7 @@ export class ProductRelatedReponseDto extends ProductReponseDto {
 
 export class ProductDetailResponseDto extends ProductReponseDto {
   @Expose()
+  @Type(() => ProductOptionResponseDto)
   options: Array<ProductOptionResponseDto>;
   @Expose({ name: 'variants' })
   @Type(() => ProductVariantReponseDto)

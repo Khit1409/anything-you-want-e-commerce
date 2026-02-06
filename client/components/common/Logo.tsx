@@ -10,6 +10,7 @@ export default function Logo() {
           width={100}
           loading="lazy"
           height={100}
+          className="w-[100px] h-[100px] p-0 m-0"
         />
       </Link>
     </div>

@@ -1,7 +1,7 @@
 "use client";
 import { ProductPreviews } from "@/interfaces/response/product.response";
-import ProductCard from "../common/ProductCard";
-import NotFoundProduct from "../common/NotFoundProduct";
+import ProductCard from "./ProductCard";
+import NotFoundProduct from "./NotFoundProduct";
 
 interface Props {
   products: Array<ProductPreviews>;

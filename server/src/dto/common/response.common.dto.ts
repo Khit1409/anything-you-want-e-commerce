@@ -8,3 +8,10 @@ export class ResponseDto {
   @IsString()
   timestamp: Date | string;
 }
+
+export class TimestampResponseDto {
+  @IsString()
+  createdAt: string;
+  @IsString()
+  updatedAt: string;
+}

@@ -1,4 +1,4 @@
-import ProductList from "@/components/common/ProductList";
+import ProductList from "@/components/products/ProductList";
 import React from "react";
 
 export default function page() {

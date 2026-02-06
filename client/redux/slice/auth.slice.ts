@@ -5,7 +5,7 @@ import { authThunk, loginThunk } from "../thunk/auth.thunk";
 const authInitalState: IAuthInitalState = {
   isLoggedIn: false,
   error: null,
-  loading: false,
+  loading: true,
   authData: null,
 };
 /**

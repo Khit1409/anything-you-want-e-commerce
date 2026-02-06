@@ -1,7 +1,8 @@
 "use client";
 
-import ProductList from "../common/ProductList";
-import Hero from "../users/Hero";
+import ProductList from "@/components/products/ProductList";
+import Hero from "@/components/users/Hero";
+
 
 export default function HomePage() {
   return (

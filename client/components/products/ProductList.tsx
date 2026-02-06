@@ -1,7 +1,7 @@
 "use client";
 import { Role } from "@/interfaces/common/role.interface";
 import { useState } from "react";
-import ProductLoading from "./ProductLoading";
+import SectionShowDataLoading from "../common/SectionShowDataLoading";
 import ProductCard from "./ProductCard";
 import NotFoundProduct from "./NotFoundProduct";
 import { getProductService } from "@/api/product.api";
@@ -23,7 +23,7 @@ export default function ProductList({ role }: { role: Role }) {
   return (
     <section id="product-section" className="bg-gray-50 py-6 px-4 min-h-screen">
       {isLoading ? (
-        <ProductLoading />
+        <SectionShowDataLoading />
       ) : !data || data.length === 0 ? (
         <NotFoundProduct />
       ) : (
