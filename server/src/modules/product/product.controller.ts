@@ -1,6 +1,6 @@
 import { Controller, Get, Query, Param, HttpCode } from '@nestjs/common';
 import { ProductService } from './product.service';
-import { GetProductQueryDto } from '../dto/request/product.request.dto';
+import { GetProductQueryDto } from './dto/product.request.dto';
 
 @Controller('products')
 export class ProductController {

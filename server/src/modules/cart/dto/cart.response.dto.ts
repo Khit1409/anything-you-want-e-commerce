@@ -1,5 +1,5 @@
 import { Expose, Transform, Type } from 'class-transformer';
-import { ResponseDto } from '../common/response.common.dto';
+import { ResponseDto } from '../../common/dto/response.common.dto';
 import mongoose from 'mongoose';
 
 export class CartCategoryResponseDto {

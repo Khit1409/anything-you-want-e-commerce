@@ -102,8 +102,6 @@ export class CartOwner {
   seller_id: string;
   @Prop({ type: String, required: true })
   store_id: string;
-  @Prop({ type: String, required: true, default: null })
-  session_id: string | null;
 }
 
 @Schema({ timestamps: true, collection: 'carts' })

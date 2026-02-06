@@ -6,7 +6,7 @@ import {
   IsNotEmpty,
   IsEnum,
 } from 'class-validator';
-import { RoleDto } from '../common/auth.common.dto';
+import { RoleDto } from '../../common/dto/response.common.dto';
 
 class RegisterUserAccountAddress {
   province: string;

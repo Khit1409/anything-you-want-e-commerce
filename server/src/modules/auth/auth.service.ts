@@ -1,8 +1,12 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import { InjectRepository } from '@nestjs/typeorm';
-import axios from 'axios';
 import { randomUUID } from 'crypto';
 import { Request } from 'express';
 import { Model } from 'mongoose';
@@ -13,20 +17,19 @@ import { UserAddress } from 'src/database/structure/entities/userAdress.entity';
 import { UserInfo } from 'src/database/structure/entities/userInfo.entity';
 import { UserPhone } from 'src/database/structure/entities/userPhone.entity';
 import { Cart } from 'src/database/structure/schemas/cart.schema';
-import { RoleDto } from 'src/dto/common/auth.common.dto';
 
-import { ResponseDto } from 'src/dto/common/response.common.dto';
+import { CookieMap } from 'src/interfaces/cookies.interface';
+import { Repository } from 'typeorm';
 import {
   LoginRequestDto,
   RegisterUserAccountRequestDto,
-} from 'src/dto/request/auth.request.dto';
+} from './dto/auth.request.dto';
+import { ResponseDto, RoleDto } from '../common/dto/response.common.dto';
 import {
   AuthenticationDataDto,
   AuthenticationResponseDto,
   LoginResponseDto,
-} from 'src/dto/response/auth.response.dto';
-import { CookieMap } from 'src/interfaces/cookies.interface';
-import { Repository } from 'typeorm';
+} from './dto/auth.response.dto';
 @Injectable()
 export class AuthService {
   constructor(
@@ -44,9 +47,7 @@ export class AuthService {
   /**
    * user register
    */
-  async userRegister(
-    dto: RegisterUserAccountRequestDto,
-  ): Promise<ResponseDto & { status: number }> {
+  async userRegister(dto: RegisterUserAccountRequestDto): Promise<ResponseDto> {
     try {
       const {
         address,
@@ -62,12 +63,11 @@ export class AuthService {
       const existing = await this.userRepo.findOne({ where: { emailAddress } });
 
       if (existing) {
-        return {
+        throw new BadRequestException({
           success: false,
           message: 'EXISTING USER EMAIL!',
           timestamp: new Date().toLocaleDateString('vi-VN'),
-          status: 302,
-        };
+        });
       }
 
       const hashPassword = await bcrypt.hash(currentPassword, 10);
@@ -97,34 +97,26 @@ export class AuthService {
 
       const created = await this.userRepo.save(newUser);
       if (!created) {
-        return {
-          status: 404,
-          message: 'REGISTER IS FAIL USER IS NOT SAVE!',
-          timestamp: new Date().toLocaleDateString('vi-VN'),
-          success: false,
-        };
+        throw new HttpException(
+          {
+            message: 'REGISTER IS FAIL USER IS NOT SAVE!',
+            timestamp: new Date().toLocaleDateString('vi-VN'),
+            success: false,
+          },
+          404,
+        );
       }
       return {
         success: true,
         message: 'REGISTER SUCCESSFULLY!',
-        status: 200,
         timestamp: new Date().toLocaleDateString(),
       };
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        return {
-          message: error.message,
-          success: false,
-          timestamp: new Date().toLocaleDateString('vi-VN'),
-          status: error.status || 500,
-        };
-      }
-      return {
-        message: 'Unknow error',
+      throw new InternalServerErrorException({
+        message: error as string,
         success: false,
         timestamp: new Date().toLocaleDateString('vi-VN'),
-        status: 500,
-      };
+      });
     }
   }
   /**
@@ -132,10 +124,7 @@ export class AuthService {
    * @param dto
    * @returns
    */
-  async clientLogin(
-    dto: LoginRequestDto,
-    sessionId?: string,
-  ): Promise<LoginResponseDto> {
+  async clientLogin(dto: LoginRequestDto): Promise<LoginResponseDto> {
     const { emailAddress, currentPassword } = dto;
 
     try {
@@ -176,29 +165,6 @@ export class AuthService {
       const token = await this.jwtService.signAsync(tokenPayload, {
         expiresIn: '1d',
       });
-
-      if (sessionId) {
-        try {
-          /**-> user login -> find carts by session id -> update user id
-           *-> user logout -> xóa user id và session id.
-           *-> user thêm cart lần 2 (ssid tạo mới).
-           *-> user login lần 2 -> find carts by session id -> update user id.
-           */
-          await this.cartModel.updateMany(
-            { 'owner.session_id': sessionId },
-            { 'owner.user_id': user.id },
-          );
-        } catch (error) {
-          throw new HttpException(
-            {
-              message: (error as string) || 'Server error exception!',
-              success: false,
-              timestamp: new Date().toLocaleDateString('vi-VN'),
-            },
-            404,
-          );
-        }
-      }
 
       return {
         data: { role: tokenPayload.role },
@@ -296,9 +262,7 @@ export class AuthService {
    */
   async clientAuth(
     req: Request,
-  ): Promise<
-    AuthenticationResponseDto & { status: number; sessionId?: string }
-  > {
+  ): Promise<AuthenticationResponseDto & { sessionId?: string }> {
     try {
       //token
       const cookies = req.cookies as CookieMap;
@@ -309,43 +273,47 @@ export class AuthService {
           const sessionId = randomUUID();
           return {
             message: 'Token is not found, can be is not login or expire token!',
-            status: 401,
             success: false,
             sessionId,
             timestamp: new Date().toLocaleDateString('vi-VN'),
           };
         }
-        return {
-          message: 'Token is not found, can be is not login or expire token!',
-          status: 401,
-          success: false,
-          timestamp: new Date().toLocaleDateString('vi-VN'),
-        };
+        throw new HttpException(
+          {
+            message: 'Token is not found, can be is not login or expire token!',
+            success: false,
+            timestamp: new Date().toLocaleDateString('vi-VN'),
+          },
+          401,
+        );
       }
       const decoded: AuthenticationDataDto =
         await this.jwtService.verifyAsync(accessToken);
       if (!decoded) {
-        return {
-          message: "can't verify token!",
-          success: false,
-          status: 404,
-          timestamp: new Date().toLocaleDateString('vi-VN'),
-        };
+        throw new HttpException(
+          {
+            message: "can't verify token!",
+            success: false,
+            timestamp: new Date().toLocaleDateString('vi-VN'),
+          },
+          404,
+        );
       }
       return {
         message: 'Verify is successfully!',
         success: true,
-        status: 200,
         data: decoded,
         timestamp: new Date().toLocaleDateString('vi-VN'),
       };
     } catch (error) {
-      return {
-        message: error as string,
-        success: false,
-        status: 500,
-        timestamp: new Date().toLocaleDateString('vi-VN'),
-      };
+      throw new HttpException(
+        {
+          message: error as string,
+          success: false,
+          timestamp: new Date().toLocaleDateString('vi-VN'),
+        },
+        500,
+      );
     }
   }
 }

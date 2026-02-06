@@ -5,9 +5,9 @@ import { Request } from 'express';
 import mongoose, { Connection, Model } from 'mongoose';
 import { Cart } from 'src/database/structure/schemas/cart.schema';
 import { Product } from 'src/database/structure/schemas/product.schema';
-import { ResponseDto } from 'src/dto/common/response.common.dto';
-import { CartRequestDto } from 'src/dto/request/cart.request.dto';
-import { CartResponseDto } from 'src/dto/response/cart.response.dto';
+import { ResponseDto } from '../common/dto/response.common.dto';
+import { CartRequestDto } from 'src/modules/cart/dto/cart.request.dto';
+import { CartResponseDto } from './dto/cart.response.dto';
 
 @Injectable()
 export class CartService {
@@ -156,18 +156,15 @@ export class CartService {
    *
    * @param userId
    */
-  async getCart(
-    userId?: string,
-    sessionId?: string,
-  ): Promise<
+  async getCart(userId: string): Promise<
     ResponseDto & {
       data: { carts: Array<CartResponseDto> | Array<never> };
     }
   > {
-    if (!userId && !sessionId) {
+    if (!userId) {
       throw new HttpException(
         {
-          message: 'User is and session id not found!',
+          message: 'user id not found!',
           success: false,
           timestamp: new Date().toLocaleDateString('vi-vn'),
           data: { carts: [] },
@@ -176,15 +173,8 @@ export class CartService {
       );
     }
     try {
-      let query = {};
-      if (userId) query = { 'owner.user_id': userId };
-      else {
-        query = {
-          'owner.session_id': sessionId,
-        };
-      }
       const carts = await this.cartModel
-        .find(query)
+        .find({ 'owner.user_id': userId })
         .select('-owner -__v')
         .lean();
       return {

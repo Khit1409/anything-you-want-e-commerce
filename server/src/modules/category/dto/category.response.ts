@@ -1,4 +1,4 @@
-import { ResponseDto } from '../common/response.common.dto';
+import { ResponseDto } from '../../common/dto/response.common.dto';
 
 export class CategoryApi extends ResponseDto {
   data: CategoryDateResponseDto;

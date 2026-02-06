@@ -1,7 +1,7 @@
 import { Body, Controller, Get, HttpCode, Post, Req } from '@nestjs/common';
 import { CartService } from './cart.service';
-import { CartRequestDto } from 'src/dto/request/cart.request.dto';
-import type { Request, Response } from 'express';
+import { CartRequestDto } from './dto/cart.request.dto';
+import type { Request } from 'express';
 
 @Controller('carts')
 export class CartController {
@@ -11,8 +11,7 @@ export class CartController {
   @Get()
   async getCart(@Req() req: Request) {
     const uid = req.userId;
-    const sessionId = req.sessionId;
-    return await this.cartService.getCart(uid, sessionId);
+    return await this.cartService.getCart(uid);
   }
   /**
    *

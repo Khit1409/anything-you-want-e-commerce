@@ -15,3 +15,8 @@ export class TimestampResponseDto {
   @IsString()
   updatedAt: string;
 }
+
+export enum RoleDto {
+  USER = 'user',
+  SELLER = 'seller',
+}

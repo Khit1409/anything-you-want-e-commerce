@@ -1,7 +1,8 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { ResponseDto } from '../common/response.common.dto';
+
 import { Type } from 'class-transformer';
-import { RoleDto } from '../common/auth.common.dto';
+import { ResponseDto } from 'src/modules/common/dto/response.common.dto';
+import { RoleDto } from '../../common/dto/response.common.dto';
 
 export type TokenExpire = '1d' | '1h' | number;
 

@@ -4,7 +4,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import type { StringValue } from 'ms';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from 'src/modules/common/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from 'src/database/structure/entities/user.entity';
 import { UserInfo } from 'src/database/structure/entities/userInfo.entity';
