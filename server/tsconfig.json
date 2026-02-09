@@ -20,6 +20,13 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "@/*": ["./*"],
+      "@/modules/*": ["./src/modules/*"],
+      "@/database/*": ["./src/database/*"],
+      "@/lib/*": ["./src/lib/*"],
+      "@/migration/*": ["./src/database/migrations/*"]
+    }
   }
 }

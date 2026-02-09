@@ -1,124 +1,35 @@
 import {
-  BadRequestException,
   HttpException,
   Injectable,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-import { InjectModel } from '@nestjs/mongoose';
+
 import { InjectRepository } from '@nestjs/typeorm';
 import { randomUUID } from 'crypto';
 import { Request } from 'express';
-import { Model } from 'mongoose';
+
 import bcrypt from 'node_modules/bcryptjs';
-import { Seller } from 'src/database/structure/entities/seller.entity';
-import { User, UserStatus } from 'src/database/structure/entities/user.entity';
-import { UserAddress } from 'src/database/structure/entities/userAdress.entity';
-import { UserInfo } from 'src/database/structure/entities/userInfo.entity';
-import { UserPhone } from 'src/database/structure/entities/userPhone.entity';
-import { Cart } from 'src/database/structure/schemas/cart.schema';
 
 import { CookieMap } from 'src/interfaces/cookies.interface';
 import { Repository } from 'typeorm';
-import {
-  LoginRequestDto,
-  RegisterUserAccountRequestDto,
-} from './dto/auth.request.dto';
-import { ResponseDto, RoleDto } from '../common/dto/response.common.dto';
+import { LoginRequestDto } from './dto/auth.request.dto';
+import { RoleDto } from '../common/dto/response.common.dto';
 import {
   AuthenticationDataDto,
   AuthenticationResponseDto,
   LoginResponseDto,
 } from './dto/auth.response.dto';
+import { User } from '../users/entities/user.entity';
+import { Seller } from '../sellers/entities/seller.entity';
 @Injectable()
 export class AuthService {
   constructor(
     @InjectRepository(User) private readonly userRepo: Repository<User>,
     @InjectRepository(Seller) private readonly sellerRepo: Repository<Seller>,
-    @InjectRepository(UserPhone)
-    private readonly userPhoneRepo: Repository<UserPhone>,
-    @InjectRepository(UserAddress)
-    private readonly userAddresRepo: Repository<UserAddress>,
-    @InjectRepository(UserInfo)
-    private readonly userInfoRepo: Repository<UserInfo>,
-    @InjectModel('Cart') private readonly cartModel: Model<Cart>,
     private jwtService: JwtService,
   ) {}
-  /**
-   * user register
-   */
-  async userRegister(dto: RegisterUserAccountRequestDto): Promise<ResponseDto> {
-    try {
-      const {
-        address,
-        currentPassword,
-        dateOfBirth,
-        emailAddress,
-        firstName,
-        lastName,
-        fullName,
-        phones,
-      } = dto;
-
-      const existing = await this.userRepo.findOne({ where: { emailAddress } });
-
-      if (existing) {
-        throw new BadRequestException({
-          success: false,
-          message: 'EXISTING USER EMAIL!',
-          timestamp: new Date().toLocaleDateString('vi-VN'),
-        });
-      }
-
-      const hashPassword = await bcrypt.hash(currentPassword, 10);
-
-      const newUser = this.userRepo.create({
-        emailAddress,
-        hashPassword,
-        status: UserStatus.ACTIVE,
-
-        info: {
-          dateOfBirth: new Date(dateOfBirth),
-          firstName,
-          lastName,
-          fullName,
-        },
-
-        addresses: address.map((a) => ({
-          province: a.province,
-          ward: a.ward,
-          addressDetail: a.addressDetail,
-        })),
-
-        phones: phones.map((p) => ({
-          phoneNumber: p.phoneNumber,
-        })),
-      });
-
-      const created = await this.userRepo.save(newUser);
-      if (!created) {
-        throw new HttpException(
-          {
-            message: 'REGISTER IS FAIL USER IS NOT SAVE!',
-            timestamp: new Date().toLocaleDateString('vi-VN'),
-            success: false,
-          },
-          404,
-        );
-      }
-      return {
-        success: true,
-        message: 'REGISTER SUCCESSFULLY!',
-        timestamp: new Date().toLocaleDateString(),
-      };
-    } catch (error) {
-      throw new InternalServerErrorException({
-        message: error as string,
-        success: false,
-        timestamp: new Date().toLocaleDateString('vi-VN'),
-      });
-    }
-  }
   /**
    * client login
    * @param dto
@@ -314,6 +225,37 @@ export class AuthService {
         },
         500,
       );
+    }
+  }
+  /**
+   *
+   */
+  async getProfile(userId: string) {
+    try {
+      const user = await this.userRepo.findOne({
+        where: { id: userId },
+        select: ['id', 'emailAddress', 'status', 'lastLoginAt'],
+        relations: ['info', 'addresses', 'phones'],
+      });
+      if (!user) {
+        throw new UnauthorizedException({
+          message: 'user profile is not found',
+          success: false,
+          data: { user },
+          timestamp: new Date().toLocaleDateString('vi-VN'),
+        });
+      }
+      return {
+        message: 'User profile is ready using!',
+        success: true,
+        timestamp: new Date().toLocaleDateString('vi-VN'),
+      };
+    } catch (error) {
+      throw new InternalServerErrorException({
+        message: error as string,
+        success: false,
+        timestamp: new Date().toLocaleDateString('vi-VN'),
+      });
     }
   }
 }

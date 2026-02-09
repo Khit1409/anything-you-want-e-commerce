@@ -10,13 +10,10 @@ import {
 } from '@nestjs/common';
 import type { Request, Response } from 'express';
 import { AuthService } from './auth.service';
-import { authCookieConfig } from 'src/config/cookie.config';
-import {
-  LoginRequestDto,
-  RegisterUserAccountRequestDto,
-} from './dto/auth.request.dto';
+import { LoginRequestDto } from './dto/auth.request.dto';
 import { RoleDto } from '../common/dto/response.common.dto';
 import { CookieMap } from 'src/interfaces/cookies.interface';
+import { authCookieConfig } from '@/src/lib/cookie.config';
 
 @Controller('auth')
 export class AuthController {
@@ -96,15 +93,5 @@ export class AuthController {
       success: true,
       timestamp: new Date(),
     };
-  }
-  /**
-   * register
-   */
-  @HttpCode(201)
-  @Post('register/user')
-  async userRegister(@Body() dto: RegisterUserAccountRequestDto) {
-    const result = await this.authService.userRegister(dto);
-    const { message, timestamp, success } = result;
-    return { message, success, timestamp };
   }
 }
