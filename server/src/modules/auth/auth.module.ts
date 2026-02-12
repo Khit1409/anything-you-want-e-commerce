@@ -8,6 +8,9 @@ import { DatabaseModule } from '@/src/database/database.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../users/entities/user.entity';
 import { Seller } from '../sellers/entities/seller.entity';
+import { HttpResponse } from '@/src/helpers/httpResponse';
+import { SellerRepository } from '../sellers/sellers.repository';
+import { UserRepository } from '../users/users.repository';
 @Module({
   imports: [
     JwtModule.registerAsync({
@@ -25,7 +28,7 @@ import { Seller } from '../sellers/entities/seller.entity';
     TypeOrmModule.forFeature([User, Seller]),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
+  providers: [AuthService, HttpResponse, SellerRepository, UserRepository],
   exports: [JwtModule],
 })
 export class AuthModule {}

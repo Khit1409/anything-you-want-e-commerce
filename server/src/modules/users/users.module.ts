@@ -7,6 +7,8 @@ import { UserInfo } from './entities/user-info.entity';
 import { User } from './entities/user.entity';
 import { UserService } from './users.service';
 import { UserController } from './users.controller';
+import { UserRepository } from './users.repository';
+import { HttpResponse } from '@/src/helpers/httpResponse';
 
 @Module({
   imports: [
@@ -14,6 +16,6 @@ import { UserController } from './users.controller';
     TypeOrmModule.forFeature([User, UserInfo, UserPhone, UserAddress]),
   ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, UserRepository, HttpResponse],
 })
 export class UserModule {}

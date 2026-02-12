@@ -32,7 +32,9 @@ export interface CartVariantResponse {
   sku: string;
   stock: number;
   priceExtra: number;
-  options: Map<string, string>;
+  options: {
+    [key: string]: string;
+  };
 }
 
 export interface CartOptionValueResponse {
@@ -66,4 +68,8 @@ export interface CartResponse {
   shipping: CartShippingResponse;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface CartUpdateResponse extends ApiResponse {
+  data: { updateCount: number };
 }

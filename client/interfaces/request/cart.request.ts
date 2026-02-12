@@ -12,7 +12,7 @@ export interface CartItemRequest {
   name: string;
   total_price: number;
   sale: number;
-  origin_price:number;
+  origin_price: number;
   quantity: number;
   category: Category;
   brand: string;
@@ -57,4 +57,10 @@ export interface CartShippingRequest {
 export interface CartRatingSumaryRequest {
   avg: number;
   total: number;
+}
+
+export interface CartUpdateDataRequest {
+  id: string;
+  quantity?: number;
+  variantOptionChosen?: { [key: string]: string };
 }

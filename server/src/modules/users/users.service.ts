@@ -1,55 +1,48 @@
 import {
   BadRequestException,
-  HttpException,
   Injectable,
-  InternalServerErrorException,
+  NotFoundException,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { UserRepository } from './users.repository';
 import { RegisterUserAccountRequestDto } from '../auth/dto/auth.request.dto';
+import { HttpResponse } from '@/src/helpers/httpResponse';
 @Injectable()
 export class UserService {
-  constructor(private readonly repo: UserRepository) {}
+  constructor(
+    private readonly repository: UserRepository,
+    private readonly httpHelper: HttpResponse,
+  ) {}
   /**
    *
    * @param dto
    * @returns
    */
   async register(dto: RegisterUserAccountRequestDto) {
-    try {
-      const existing = await this.repo.findByEmail(dto.emailAddress);
+    const dob = new Date(dto.dateOfBirth);
 
-      if (existing) {
-        throw new BadRequestException({
-          success: false,
-          message: 'EXISTING USER EMAIL!',
-          timestamp: new Date().toLocaleDateString('vi-VN'),
-        });
-      }
-
-      const created = await this.repo.create(dto);
-
-      if (!created) {
-        throw new HttpException(
-          {
-            message: 'REGISTER IS FAIL USER IS NOT SAVE!',
-            timestamp: new Date().toLocaleDateString('vi-VN'),
-            success: false,
-          },
-          404,
-        );
-      }
-      return {
-        success: true,
-        message: 'REGISTER SUCCESSFULLY!',
-        timestamp: new Date().toLocaleDateString(),
-      };
-    } catch (error) {
-      throw new InternalServerErrorException({
-        message: error as string,
-        success: false,
-        timestamp: new Date().toLocaleDateString('vi-VN'),
-      });
+    if (isNaN(dob.getTime())) {
+      throw new BadRequestException(
+        this.httpHelper.error('Can not format this date time!'),
+      );
     }
+
+    const existing = await this.repository.findByEmail(dto.emailAddress);
+
+    if (existing) {
+      throw new BadRequestException(
+        this.httpHelper.error('existing this email!'),
+      );
+    }
+
+    const created = await this.repository.create(dto);
+
+    if (!created) {
+      throw new NotFoundException(
+        this.httpHelper.error('Cant create new user!'),
+      );
+    }
+    return this.httpHelper.success('REGISTER SUCCESSFULLY!');
   }
   /**
    *
@@ -57,20 +50,11 @@ export class UserService {
    * @returns
    */
   async getInfo(id: string) {
-    try {
-      const info = await this.repo.getInfo(id);
-      return {
-        success: true,
-        message: 'User info is reading using!',
-        data: { info },
-        timestamp: new Date().toLocaleDateString('vi-VN'),
-      };
-    } catch (error) {
-      throw new InternalServerErrorException({
-        success: false,
-        message: error as string,
-        timestamp: new Date().toLocaleDateString('vi-VN'),
-      });
-    }
+    const info = await this.repository.getInfo(id);
+    if (!info)
+      throw new UnauthorizedException(
+        this.httpHelper.error('This user info is undefine'),
+      );
+    return this.httpHelper.success('User information is ready using!', info);
   }
 }

@@ -4,6 +4,7 @@ import { CategoryController } from '../categories/categories.controller';
 import { DatabaseModule } from '@/src/database/database.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { categorySchema } from './schemas/categories.schema';
+import { CategoryRepository } from './categories.repository';
 
 @Module({
   imports: [
@@ -11,6 +12,6 @@ import { categorySchema } from './schemas/categories.schema';
     MongooseModule.forFeature([{ name: 'Category', schema: categorySchema }]),
   ],
   controllers: [CategoryController],
-  providers: [CategoryService],
+  providers: [CategoryService, CategoryRepository],
 })
 export class CategoryModule {}

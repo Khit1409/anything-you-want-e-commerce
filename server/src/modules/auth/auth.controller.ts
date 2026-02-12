@@ -45,17 +45,11 @@ export class AuthController {
    */
   @HttpCode(200)
   @Get('me')
-  async auth(
-    @Req()
-    req: Request,
-    @Res({ passthrough: true }) res: Response,
-  ) {
+  async auth(@Req() req: Request) {
     //handle
     const result = await this.authService.clientAuth(req);
-    const { message, success, data, timestamp, sessionId } = result;
-    if (sessionId) {
-      return res.cookie('session_id', sessionId, authCookieConfig);
-    }
+    const { message, success, data, timestamp } = result;
+
     return { message, success, timestamp, data };
   }
   /**
@@ -75,9 +69,8 @@ export class AuthController {
   ) {
     const cookies = req.cookies as CookieMap;
     const access_token = cookies.access_token;
-    const session_id = cookies.session_id;
 
-    if (!access_token && !session_id) {
+    if (!access_token) {
       throw new UnauthorizedException({
         message: 'Not existing your token in cookies!',
         success: false,
@@ -86,7 +79,6 @@ export class AuthController {
     }
 
     res.clearCookie('access_token', authCookieConfig);
-    res.clearCookie('session_id', authCookieConfig);
 
     return {
       message: 'Logout is successfully!',

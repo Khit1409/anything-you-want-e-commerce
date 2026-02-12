@@ -5,16 +5,23 @@ import {
   ValidateNested,
   IsNotEmpty,
   IsEnum,
+  Length,
+  IsDateString,
 } from 'class-validator';
 import { RoleDto } from '../../common/dto/response.common.dto';
 
 class RegisterUserAccountAddress {
+  @IsString()
   province: string;
+  @IsString()
   ward: string;
+  @IsString()
   addressDetail: string;
 }
 
 class RegisterUserAccountPhone {
+  @IsString()
+  @Length(10)
   phoneNumber: string;
 }
 
@@ -34,9 +41,9 @@ export class RegisterUserAccountRequestDto {
   @IsString()
   @IsNotEmpty()
   firstName: string;
-  @IsString()
+  @IsDateString()
   @IsNotEmpty()
-  dateOfBirth: Date | string;
+  dateOfBirth: string;
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => RegisterUserAccountAddress)

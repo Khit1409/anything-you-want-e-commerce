@@ -40,7 +40,7 @@ export class ProductImageResponseDto {
 }
 
 export class ProductApi extends ResponseDto {
-  data: { products: Array<ProductReponseDto> };
+  data: { products: Array<ProductResponseDto> };
 }
 
 export class ProductOwnerReponseDto {
@@ -106,7 +106,7 @@ export class ProductReviewResponseDto {
   commentAt: Date | string;
 }
 
-export class ProductReponseDto {
+export class ProductResponseDto {
   @Expose({ name: '_id' })
   @Transform(({ obj }: { obj: { _id: mongoose.Types.ObjectId } }) =>
     obj._id.toString(),
@@ -128,11 +128,11 @@ export class ProductReponseDto {
   status: ProductStatus;
 }
 
-export class ProductRelatedReponseDto extends ProductReponseDto {
+export class ProductRelatedReponseDto extends ProductResponseDto {
   readonly;
 }
 
-export class ProductDetailResponseDto extends ProductReponseDto {
+export class ProductDetailResponseDto extends ProductResponseDto {
   @Expose()
   @Type(() => ProductOptionResponseDto)
   options: Array<ProductOptionResponseDto>;

@@ -141,3 +141,15 @@ export class CartRequestDto {
   @Type(() => CartVariantChosenRequestDto)
   variant_chosen: CartVariantChosenRequestDto;
 }
+
+export class CartUpdateDataRequestDto {
+  @IsString()
+  id: string;
+  @IsOptional()
+  @IsNumber()
+  @Min(1)
+  quantity?: number;
+  @IsOptional()
+  @IsObject()
+  variantOptionChosen?: { [key: string]: string };
+}

@@ -3,21 +3,12 @@ import { InjectRepository } from '@nestjs/typeorm';
 import bcrypt from 'bcrypt';
 import { User, UserStatus } from './entities/user.entity';
 import { Repository } from 'typeorm';
-import { UserPhone } from './entities/user-phone.entity';
-import { UserAddress } from './entities/user-address.entity';
-import { UserInfo } from './entities/user-info.entity';
 import { RegisterUserAccountRequestDto } from '../auth/dto/auth.request.dto';
 
 @Injectable()
 export class UserRepository {
   constructor(
-    @InjectRepository(User) private readonly userRepo: Repository<User>,
-    @InjectRepository(UserPhone)
-    private readonly userPhoneRepo: Repository<UserPhone>,
-    @InjectRepository(UserAddress)
-    private readonly userAddresRepo: Repository<UserAddress>,
-    @InjectRepository(UserInfo)
-    private readonly userInfoRepo: Repository<UserInfo>,
+    @InjectRepository(User) private readonly ormRepo: Repository<User>,
   ) {}
 
   /**
@@ -26,7 +17,7 @@ export class UserRepository {
    * @returns
    */
   async findByEmail(emailAddress: string) {
-    return await this.userRepo.findOne({ where: { emailAddress } });
+    return await this.ormRepo.findOne({ where: { emailAddress } });
   }
   /**
    *
@@ -34,7 +25,7 @@ export class UserRepository {
    * @returns
    */
   async findById(id: string) {
-    return await this.userRepo.findOne({ where: { id } });
+    return await this.ormRepo.findOne({ where: { id } });
   }
   /**
    *
@@ -54,7 +45,7 @@ export class UserRepository {
     } = dto;
 
     const hashPassword = await bcrypt.hash(currentPassword, 10);
-    const newUser = this.userRepo.create({
+    const newUser = this.ormRepo.create({
       emailAddress,
       hashPassword,
       status: UserStatus.ACTIVE,
@@ -77,7 +68,7 @@ export class UserRepository {
       })),
     });
 
-    const created = await this.userRepo.save(newUser);
+    const created = await this.ormRepo.save(newUser);
     return created;
   }
   /**
@@ -86,18 +77,14 @@ export class UserRepository {
    * @returns
    */
   async getInfo(id: string) {
-    return await this.userRepo.findOne({
+    return await this.ormRepo.findOne({
       where: { id },
-      select: [
-        'addresses',
-        'id',
-        'info',
-        'phones',
-        'emailAddress',
-        'lastLoginAt',
-        'status',
-        'createdAt',
-      ],
+      select: ['id', 'emailAddress', 'lastLoginAt', 'status', 'createdAt'],
+      relations: {
+        info: true,
+        addresses: true,
+        phones: true,
+      },
     });
   }
 }

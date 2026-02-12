@@ -5,6 +5,9 @@ import { DatabaseModule } from '@/src/database/database.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { cartSchema } from './schemas/carts.schema';
 import { productSchema } from '../products/schemas/products.schema';
+import { CartRepository } from './carts.repositort';
+import { HttpResponse } from '@/src/helpers/httpResponse';
+import { ProductRepository } from '../products/products.repository';
 
 @Module({
   imports: [
@@ -15,6 +18,6 @@ import { productSchema } from '../products/schemas/products.schema';
     ]),
   ],
   controllers: [CartController],
-  providers: [CartService],
+  providers: [CartService, HttpResponse, CartRepository, ProductRepository],
 })
 export class CartModule {}

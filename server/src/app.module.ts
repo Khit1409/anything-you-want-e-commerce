@@ -6,9 +6,10 @@ import { DatabaseModule } from './database/database.module';
 import { ConfigModule } from '@nestjs/config';
 import { AuthModule } from './modules/auth/auth.module';
 import { CartModule } from './modules/carts/carts.module';
-import { SessionMiddleware } from './modules/session/session.middleware';
-import { AuthMiddleware } from './modules/auth/auth.middleware';
+import { AuthMiddleware } from './middlewares/auth.middleware';
 import { CategoryModule } from './modules/categories/categories.module';
+import { UserModule } from './modules/users/users.module';
+import { SellerModule } from './modules/sellers/sellers.module';
 
 @Module({
   imports: [
@@ -18,13 +19,14 @@ import { CategoryModule } from './modules/categories/categories.module';
     AuthModule,
     CartModule,
     CategoryModule,
+    UserModule,
+    SellerModule,
   ],
   controllers: [AppController],
   providers: [AppService],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(SessionMiddleware).forRoutes('*');
     consumer.apply(AuthMiddleware).forRoutes('carts');
   }
 }

@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv';
 import { ConfigService } from '@nestjs/config';
 import cookieParser from 'cookie-parser';
 import { ValidationPipe } from '@nestjs/common';
+import { InternalErrorFilter } from './core/http-exception.filter';
 dotenv.config();
 
 async function bootstrap() {
@@ -24,6 +25,7 @@ async function bootstrap() {
       },
     }),
   );
+  app.useGlobalFilters(new InternalErrorFilter());
   app.setGlobalPrefix('/api');
   const port = configService.get<number>('PORT') || 8080;
   await app.listen(port);
